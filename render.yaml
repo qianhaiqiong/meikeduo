@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: meli-api
+    runtime: node
+    plan: starter
+    region: singapore
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: MELI_CLIENT_ID
+        sync: false
+      - key: MELI_CLIENT_SECRET
+        sync: false
+      - key: MELI_REDIRECT_URI
+        sync: false
+      - key: ADMIN_TOKEN
+        sync: false
+      - key: TOKEN_ENCRYPTION_KEY
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: meli-api-db
+          property: connectionString
+
+databases:
+  - name: meli-api-db
+    plan: basic
+    region: singapore
