@@ -135,6 +135,16 @@ app.get('/meli/oauth/callback', async (req, res) => {
   if (error) return res.status(400).json({ error: 'Authorization failed', detail: error });
   if (!code) return res.status(400).json({ error: 'Missing authorization code' });
 
+  // Temporary bridge for local development: the public callback stays registered in
+  // Mercado Libre, then the authorization code is handed to the local ERP process.
+  if (process.env.MELI_LOCAL_CALLBACK_URL) {
+    const local = new URL(process.env.MELI_LOCAL_CALLBACK_URL);
+    for (const [key, value] of Object.entries(req.query)) {
+      if (value !== undefined) local.searchParams.set(key, String(value));
+    }
+    return res.redirect(local.toString());
+  }
+
   try {
     const data = await exchangeCode(code);
     saveAccount(data);
